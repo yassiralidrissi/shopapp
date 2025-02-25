@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: shop
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/productmanagementdb
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+    show-sql: false
+
+application:
+  security:
+    jwt:
+      secret-key: mgfuEgqwnl7AUqdZUVFDfA0slPgfR8ORtSJzZTyxE9/mMPp+A7DujwDsRvCKxeT20xdoPyUtoTx3jZ9213WqKw==
+      expiration: 86400000 # 1 day
+      refresh-token:
+        expiration: 604800000 # 7 days

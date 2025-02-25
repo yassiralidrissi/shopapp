@@ -1,0 +1,32 @@
+<div class="contact-container">
+
+  <h1 class="text-center">Contact</h1>
+
+
+  <div *ngIf="messageSent" class="alert success">Demande de contact envoyée avec succès</div>
+
+
+  <form [formGroup]="contactForm" (ngSubmit)="sendMessage()">
+
+
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" formControlName="email" placeholder="Enter your email">
+      <small *ngIf="contactForm.controls.email.invalid && contactForm.controls.email.touched" class="error">
+        Email is required
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="message">Message:</label>
+      <textarea id="message" formControlName="message" rows="5" placeholder="Type your message..."></textarea>
+      <small *ngIf="contactForm.controls.message.invalid && contactForm.controls.message.touched" class="error">
+        Message is required
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="contactForm.invalid" class="btn-submit">Send</button>
+
+  </form>
+
+</div>

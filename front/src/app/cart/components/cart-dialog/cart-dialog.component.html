@@ -1,0 +1,41 @@
+<p-dialog [(visible)]="visible" header="Shopping Cart" [style]="{ width: '60vw', minHeight: '50vh' }">
+    <ng-container *ngIf="cart.length > 0; else emptyCart">
+        <table class="w-full text-center border-collapse">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of cart">
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.price }}</td>
+                    <td class="text-center">
+                        <div class="flex justify-content-center align-items-center">
+                            <button pButton icon="pi pi-minus" class="p-button-sm p-button-text"
+                                (click)="decreaseQuantity(product.id)"></button>
+                            <span class="mx-2">{{ product.quantity }}</span>
+                            <button pButton icon="pi pi-plus" class="p-button-sm p-button-text"
+                                (click)="increaseQuantity(product.id)"></button>
+                        </div>
+                    </td>
+                    <td>${{ product.price * product.quantity }}</td>
+                    <td>
+                        <p-button icon="pi pi-trash" severity="danger" (click)="removeFromCart(product)" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-right mt-3">
+            <p-button label="Clear Cart" severity="danger" (click)="clearCart()" />
+        </div>
+    </ng-container>
+
+    <ng-template #emptyCart>
+        <p class="text-center">Your cart is empty.</p>
+    </ng-template>
+</p-dialog>
