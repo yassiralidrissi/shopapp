@@ -25,3 +25,7 @@
         </div>
     </ng-template>
 </p-splitter>
+
+<p-dialog [(visible)]="isDialogVisible" header="Shopping Cart" [style]="{ width: '60vw', minHeight: '50vh' }">
+    <app-cart-dialog></app-cart-dialog>
+</p-dialog>

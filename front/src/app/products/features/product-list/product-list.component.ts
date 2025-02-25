@@ -4,10 +4,13 @@ import { CartService } from "app/cart/service/cart.service";
 import { Product } from "app/products/data-access/product.model";
 import { ProductsService } from "app/products/data-access/products.service";
 import { ProductFormComponent } from "app/products/ui/product-form/product-form.component";
+import { ConfirmationService, MessageService } from "primeng/api";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 
 const emptyProduct: Product = {
   id: 0,
@@ -31,7 +34,7 @@ const emptyProduct: Product = {
   templateUrl: "./product-list.component.html",
   styleUrls: ["./product-list.component.scss"],
   standalone: true,
-  imports: [DataViewModule, CardModule, ButtonModule, DialogModule, ProductFormComponent, CommonModule],
+  imports: [CommonModule, DataViewModule, CardModule, ButtonModule, DialogModule, ProductFormComponent, ToastModule, ConfirmPopupModule],
   providers: []
 })
 export class ProductListComponent implements OnInit {
@@ -43,8 +46,7 @@ export class ProductListComponent implements OnInit {
   public isCreation = false;
   public readonly editedProduct = signal<Product>(emptyProduct);
 
-
-  constructor(private cartService: CartService) { }
+  constructor(private cartService: CartService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
     this.productsService.get().subscribe();
@@ -83,8 +85,25 @@ export class ProductListComponent implements OnInit {
     this.isDialogVisible = false;
   }
 
+  confirmDeletion(event: Event, product: Product) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Voulez-vous supprimer cet enregistrement ?',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-danger p-button-sm',
+      accept: () => {
+        this.onDelete(product);
+        this.messageService.add({ severity: 'success', summary: 'Confirmation', detail: `Produit ${product.id} Supprimé`, key: 'br', life: 3000 });
+      },
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejet', detail: 'Suppression Annulée', key: 'br', life: 3000 });
+      }
+    });
+  }
+
   public onAddToCart(product: Product) {
     this.cartService.addToCart(product);
+    this.messageService.add({ severity: 'success', summary: 'Panier', detail: `Produit ${product.id} est ajouté au panier`, key: 'br', life: 3000 });
   }
 
   public getInventoryLabel(status: string) {

@@ -11,13 +11,14 @@ import { ButtonModule } from "primeng/button";
 import { CartService } from "./cart/service/cart.service";
 import { BadgeModule } from 'primeng/badge';
 import { CommonModule } from "@angular/common";
+import { DialogModule } from "primeng/dialog";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
   standalone: true,
-  imports: [CommonModule, RouterModule, SplitterModule, ToolbarModule, PanelMenuComponent, DynamicDialogModule, ButtonModule, BadgeModule],
+  imports: [CommonModule, RouterModule, SplitterModule, ToolbarModule, PanelMenuComponent, DynamicDialogModule, ButtonModule, BadgeModule, CartDialogComponent, DialogModule],
   providers: [DialogService]
 })
 export class AppComponent implements OnInit {
@@ -26,6 +27,8 @@ export class AppComponent implements OnInit {
   ref: DynamicDialogRef | null = null;
 
   cartItemCount = 0;
+
+  isDialogVisible = false;
 
   constructor(private dialogService: DialogService, private cartService: CartService) { }
 
@@ -36,18 +39,7 @@ export class AppComponent implements OnInit {
   }
 
   showCartDialog() {
-    if (!this.ref) {
-      this.ref = this.dialogService.open(CartDialogComponent, {
-        header: 'Shopping Cart',
-        width: '60%',
-        modal: true,
-        closable: true
-      });
-
-      this.ref.onClose.subscribe(() => {
-        this.ref = null;
-      });
-    }
+    this.isDialogVisible = true;
   }
 
 }
