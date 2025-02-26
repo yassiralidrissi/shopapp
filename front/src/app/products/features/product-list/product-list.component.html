@@ -2,8 +2,10 @@
 
 <p-button label="Créer produit" (onClick)="onCreate()" class="block text-center" />
 
-<p-dataView #dv [value]="products()">
+
+<p-dataView #dv [value]="paginatedProducts">
     <ng-template pTemplate="list" let-products>
+        <input class="mb-2" type="text" pInputText [(ngModel)]="searchQuery" (input)="searchProducts()" placeholder="Search products" />
         @for (product of products; track product) {
         <p-card class="block mb-2">
 
@@ -41,6 +43,13 @@
             </ng-template>
         </p-card>
         }
+
+        <div class="flex align-items-center justify-content-center">
+            <p-button icon="pi pi-angle-left" (click)="prevPage()" [disabled]="currentPage === 1" />
+                <span class="mx-3">Page {{ currentPage }} sur {{ totalPages }}</span>
+            <p-button icon="pi pi-angle-right" (click)="nextPage()" [disabled]="currentPage === totalPages" />
+        </div>
+
     </ng-template>
 </p-dataView>
 

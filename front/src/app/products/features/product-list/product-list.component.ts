@@ -11,6 +11,8 @@ import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { InputTextModule } from "primeng/inputtext";
+import { FormsModule } from "@angular/forms";
 
 const emptyProduct: Product = {
   id: 0,
@@ -34,13 +36,23 @@ const emptyProduct: Product = {
   templateUrl: "./product-list.component.html",
   styleUrls: ["./product-list.component.scss"],
   standalone: true,
-  imports: [CommonModule, DataViewModule, CardModule, ButtonModule, DialogModule, ProductFormComponent, ToastModule, ConfirmPopupModule],
+  imports: [CommonModule, DataViewModule, CardModule, ButtonModule, DialogModule, ProductFormComponent, ToastModule, ConfirmPopupModule, InputTextModule, FormsModule ],
   providers: []
 })
 export class ProductListComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
 
   public readonly products = this.productsService.products;
+
+  productItems: Product[] = [];
+  paginatedProducts: any[] = []; 
+  filteredProducts: any[] = [];
+
+  searchQuery: string = '';
+
+  currentPage = 1;
+  productsPerPage = 5;
+  totalPages = 0;
 
   public isDialogVisible = false;
   public isCreation = false;
@@ -49,7 +61,39 @@ export class ProductListComponent implements OnInit {
   constructor(private cartService: CartService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
-    this.productsService.get().subscribe();
+    this.productsService.get().subscribe(response => {
+      this.productItems = response;
+      this.filteredProducts = response;
+      this.updatePagination();
+    });
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredProducts.length / this.productsPerPage);
+    const startIndex = (this.currentPage - 1) * this.productsPerPage;
+    this.paginatedProducts = this.filteredProducts.slice(startIndex, startIndex + this.productsPerPage);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  searchProducts() {
+    this.filteredProducts = this.productItems.filter((product) =>
+      product.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+    this.currentPage = 1;
+    this.updatePagination();
   }
 
   public onCreate() {
@@ -93,17 +137,17 @@ export class ProductListComponent implements OnInit {
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
         this.onDelete(product);
-        this.messageService.add({ severity: 'success', summary: 'Confirmation', detail: `Produit ${product.id} Supprimé`, key: 'br', life: 3000 });
+        this.messageService.add({ severity: 'success', summary: 'Confirmation', detail: `Produit ${product.name} est Supprimé`, key: 'br', life: 3000 });
       },
       reject: () => {
-        this.messageService.add({ severity: 'error', summary: 'Rejet', detail: 'Suppression Annulée', key: 'br', life: 3000 });
+        this.messageService.add({ severity: 'error', summary: 'Annulation', detail: 'Suppression Annulée', key: 'br', life: 3000 });
       }
     });
   }
 
   public onAddToCart(product: Product) {
     this.cartService.addToCart(product);
-    this.messageService.add({ severity: 'success', summary: 'Panier', detail: `Produit ${product.id} est ajouté au panier`, key: 'br', life: 3000 });
+    this.messageService.add({ severity: 'success', summary: 'Panier', detail: `Produit ${product.name} est ajouté au panier`, key: 'br', life: 3000 });
   }
 
   public getInventoryLabel(status: string) {
